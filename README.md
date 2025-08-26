@@ -1,71 +1,163 @@
-# owasp-cisa-security-scanner README
+# OWASP/CISA Security Scanner
 
-This is the README for your extension "owasp-cisa-security-scanner". After writing up a brief description, we recommend including the following sections.
+A comprehensive VS Code extension that scans your code for security vulnerabilities based on the OWASP Top 10 and CISA Secure by Design principles.
 
-## Features
+![Security Scanner Demo](https://via.placeholder.com/600x300/1f1f1f/ffffff?text=Security+Scanner+Demo)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## 🛡️ Features
 
-For example if there is an image subfolder under your extension project workspace:
+- **Comprehensive Security Analysis**: Detects 50+ types of security vulnerabilities
+- **OWASP Top 10 Coverage**: Complete coverage of all OWASP Top 10 categories
+- **CISA Secure by Design**: Implements CISA's secure coding principles
+- **Real-time Scanning**: Auto-scan on file save and open
+- **Multi-language Support**: JavaScript, TypeScript, Python, Java, C#, PHP, Ruby, Go, C/C++
+- **Detailed Remediation**: Specific fix recommendations with CWE classifications
+- **Severity Classification**: Critical, High, Medium, and Low severity ratings
 
-\!\[feature X\]\(images/feature-x.png\)
+## 🚀 Installation
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. Open VS Code
+2. Go to Extensions (Ctrl+Shift+X)
+3. Search for "OWASP CISA Security Scanner"
+4. Click Install
 
-## Requirements
+## 📖 Usage
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Automatic Scanning
+Files are automatically scanned when:
+- Opening a file
+- Saving a file (with 500ms debounce)
 
-## Extension Settings
+### Manual Scanning
+- **Right-click** in editor → "Scan for Security Issues"
+- **Command Palette** (Ctrl+Shift+P) → "OWASP/CISA: Scan for Security Issues"
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+### View Results
+- Security issues appear as red squiggles in the editor
+- View all issues in the **Problems** panel (View → Problems)
+- Hover over issues for detailed remediation advice
 
-For example:
+## 🔍 Detected Vulnerabilities
 
-This extension contributes the following settings:
+### OWASP Top 10 Coverage
+- **A01: Broken Access Control** - XSS prevention, unsafe HTML assignment
+- **A02: Cryptographic Failures** - Weak hashing (MD5, SHA-1), insecure random
+- **A03: Injection** - Code injection (eval, Function), XSS, template injection
+- **A04: Insecure Design** - Timing attack vulnerabilities
+- **A05: Security Misconfiguration** - CORS misconfigurations
+- **A06: Vulnerable Components** - Dependency management issues
+- **A07: Identity/Authentication Failures** - Hardcoded credentials, JWT issues
+- **A08: Software/Data Integrity Failures** - Unsafe JSON parsing, prototype pollution
+- **A09: Security Logging Failures** - Sensitive information logging
+- **A10: Server-Side Request Forgery** - Unsafe HTTP requests
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+### CISA Secure by Design
+- **Input Validation** - parseInt without radix, path traversal
+- **Memory Safety** - Buffer allocation issues, deprecated constructors
+- **Default Security** - Environment variable handling
+- **Command Injection** - Child process execution risks
 
-## Known Issues
+## ⚙️ Configuration
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Configure the scanner in VS Code settings:
 
-## Release Notes
+```json
+{
+    "owaspCisaScanner.enableAutoScan": true,
+    "owaspCisaScanner.maxFileSize": 5242880,
+    "owaspCisaScanner.enableHighSeverityOnly": false
+}
+```
 
-Users appreciate release notes as you update your extension.
+## 🛠️ Development
 
-### 1.0.0
+### Prerequisites
+- Node.js 16+
+- VS Code 1.74+
 
-Initial release of ...
+### Building from Source
+```bash
+# Clone the repository
+git clone https://github.com/JeffGrayson1969/owasp-cisa-security-scanner.git
+cd owasp-cisa-security-scanner
 
-### 1.0.1
+# Install dependencies
+npm install
 
-Fixed issue #.
+# Compile
+npm run compile
 
-### 1.1.0
+# Run security checks
+npm run security-check
 
-Added features X, Y, and Z.
+# Debug in VS Code
+code .
+# Press F5 to start debugging
+```
+
+### Testing
+```bash
+# Run tests
+npm test
+
+# Run security audit
+npm run security-audit
+```
+
+## 📊 Example Detection
+
+```javascript
+// ❌ Critical: Code Injection
+eval(userInput);
+
+// ❌ Critical: Hardcoded Credentials  
+const password = "admin123";
+
+// ❌ High: XSS Vulnerability
+element.innerHTML = userData;
+
+// ❌ Critical: Weak Cryptography
+crypto.createHash("md5");
+
+// ❌ High: Sensitive Logging
+console.log("User password:", userPass);
+
+// ✅ Secure Alternatives
+JSON.parse(userInput);
+const password = process.env.DB_PASSWORD;
+element.textContent = userData;
+crypto.createHash("sha256");
+console.log("User logged in successfully");
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) first.
+
+### Adding New Rules
+1. Add rule to `src/securityRules.ts`
+2. Include OWASP/CISA categorization
+3. Provide clear remediation advice
+4. Add test cases
+5. Update documentation
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/) for vulnerability classifications
+- [CISA Secure by Design](https://www.cisa.gov/secure-by-design) for security principles
+- [CWE Database](https://cwe.mitre.org/) for weakness classifications
+
+## 🔗 Links
+
+- [VS Code Marketplace](https://marketplace.visualstudio.com/)
+- [GitHub Issues](https://github.com/JeffGrayson1969/owasp-cisa-security-scanner/issues)
+- [OWASP Foundation](https://owasp.org/)
+- [CISA](https://www.cisa.gov/)
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Stay Secure!** 🛡️

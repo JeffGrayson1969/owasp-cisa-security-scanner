@@ -107,11 +107,11 @@
     "dependencies": {},
     "repository": {
         "type": "git",
-        "url": "https://github.com/your-username/owasp-cisa-security-scanner.git"
+        "url": "https://github.com/JeffGrayson1969/owasp-cisa-security-scanner.git"
     },
     "bugs": {
-        "url": "https://github.com/your-username/owasp-cisa-security-scanner/issues"
+        "url": "https://github.com/JeffGrayson1969/owasp-cisa-security-scanner/issues"
     },
     "license": "MIT",
-    "publisher": "VGXSecurity"
+    "publisher": "JeffGrayson1969"
 }
