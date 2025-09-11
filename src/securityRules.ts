@@ -9,6 +9,7 @@ export interface SecurityRule {
     readonly remediation: string;
     readonly cweId?: string;
     readonly references?: readonly string[];
+    readonly languages?: readonly string[]; // Language targeting
 }
 
 /**
@@ -28,7 +29,8 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         message: 'Potential XSS vulnerability: Unsafe HTML assignment without sanitization',
         remediation: 'Use textContent, createElement, or DOMPurify.sanitize() for HTML content',
         cweId: 'CWE-79',
-        references: ['https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)']
+        references: ['https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)'],
+        languages: ['javascript', 'typescript', 'javascriptreact', 'typescriptreact']
     },
     {
         id: 'A01-002',
@@ -38,7 +40,8 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         owaspCategory: 'A01: Broken Access Control',
         message: 'React dangerouslySetInnerHTML detected - ensure content is sanitized',
         remediation: 'Sanitize HTML content with DOMPurify before using dangerouslySetInnerHTML',
-        cweId: 'CWE-79'
+        cweId: 'CWE-79',
+        languages: ['javascript', 'typescript', 'javascriptreact', 'typescriptreact']
     },
 
     // ===============================
@@ -53,7 +56,8 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         message: 'MD5 is cryptographically broken and vulnerable to collision attacks',
         remediation: 'Use SHA-256, SHA-3, or bcrypt for hashing',
         cweId: 'CWE-327',
-        references: ['https://tools.ietf.org/html/rfc6151']
+        references: ['https://tools.ietf.org/html/rfc6151'],
+        languages: ['javascript', 'typescript']
     },
     {
         id: 'A02-002',
@@ -98,7 +102,30 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         message: 'eval() enables arbitrary code execution and is extremely dangerous',
         remediation: 'Use JSON.parse() for data or refactor to eliminate dynamic code execution',
         cweId: 'CWE-95',
-        references: ['https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Never_use_eval!']
+        references: ['https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#Never_use_eval!'],
+        languages: ['javascript', 'typescript']
+    },
+    {
+        id: 'A03-001-PY',
+        pattern: /exec\s*\(/gi,
+        severity: 'critical',
+        category: 'Code Injection',
+        owaspCategory: 'A03: Injection',
+        message: 'exec() enables arbitrary code execution and is extremely dangerous',
+        remediation: 'Use ast.literal_eval() for data or refactor to eliminate dynamic code execution',
+        cweId: 'CWE-95',
+        languages: ['python']
+    },
+    {
+        id: 'A03-002-PY',
+        pattern: /eval\s*\(/gi,
+        severity: 'critical',
+        category: 'Code Injection',
+        owaspCategory: 'A03: Injection',
+        message: 'eval() enables arbitrary code execution and is extremely dangerous',
+        remediation: 'Use ast.literal_eval() for safe evaluation of literals',
+        cweId: 'CWE-95',
+        languages: ['python']
     },
     {
         id: 'A03-002',
@@ -108,7 +135,8 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         owaspCategory: 'A03: Injection',
         message: 'Function constructor can execute arbitrary code',
         remediation: 'Refactor to use predefined functions or safer alternatives',
-        cweId: 'CWE-95'
+        cweId: 'CWE-95',
+        languages: ['javascript', 'typescript']
     },
     {
         id: 'A03-003',

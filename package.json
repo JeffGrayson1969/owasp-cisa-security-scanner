@@ -2,7 +2,7 @@
     "name": "owasp-cisa-security-scanner",
     "displayName": "OWASP CISA Security Scanner",
     "description": "Scans code for potential security vulnerabilities based on OWASP Top Ten and CISA Secure by Design principles",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "engines": {
         "vscode": "^1.74.0"
     },
@@ -74,6 +74,14 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Only show high severity vulnerabilities"
+                },
+                "owaspCisaScanner.excludePatterns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "description": "Additional file/folder patterns to exclude from scanning (glob patterns)"
                 }
             }
         }
