@@ -1,7 +1,7 @@
 {
     "name": "owasp-cisa-security-scanner",
     "displayName": "OWASP CISA Security Scanner",
-    "description": "Scans code for potential security vulnerabilities based on OWASP Top Ten and CISA Secure by Design principles",
+    "description": "Scans code for potential security vulnerabilities based on OWASP Top Ten, OWASP LLM Top 10, and CISA Secure by Design principles",
     "version": "0.1.0",
     "engines": {
         "vscode": "^1.74.0"
@@ -16,7 +16,11 @@
         "cisa",
         "vulnerability",
         "scanner",
-        "static-analysis"
+        "static-analysis",
+        "ai",
+        "llm",
+        "genai",
+        "machine-learning"
     ],
     "activationEvents": [
         "onLanguage:javascript",
