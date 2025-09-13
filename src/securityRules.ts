@@ -475,6 +475,252 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         message: 'Storing sensitive data in browser storage is insecure',
         remediation: 'Use secure, httpOnly cookies or server-side sessions for sensitive data',
         cweId: 'CWE-922'
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM01: Prompt Injection
+    // ===============================
+    {
+        id: 'LLM01-001',
+        pattern: /(?:openai|anthropic|azure\.openai|cohere|huggingface)\.(?:chat\.)?completions?\.create\s*\(\s*\{[^}]*(?:prompt|messages?)\s*:\s*[^'"`][^}]*\}/gi,
+        severity: 'critical',
+        category: 'GenAI Prompt Injection',
+        owaspCategory: 'LLM01: Prompt Injection',
+        message: 'Potential prompt injection vulnerability - user input directly used in LLM prompt',
+        remediation: 'Sanitize user input, use input validation, implement prompt templates with parameter binding',
+        cweId: 'CWE-74',
+        references: ['https://owasp.org/www-project-top-10-for-large-language-model-applications/'],
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM01-002',
+        pattern: /f["'].*\{[^}]*\}.*["']\.format\s*\(/gi,
+        severity: 'high',
+        category: 'GenAI Prompt Injection',
+        owaspCategory: 'LLM01: Prompt Injection',
+        message: 'Python f-string or format() with user input may enable prompt injection',
+        remediation: 'Use template systems with input validation and sanitization',
+        cweId: 'CWE-74',
+        languages: ['python']
+    },
+    {
+        id: 'LLM01-003',
+        pattern: /`[^`]*\$\{[^}]*\}[^`]*`/gi,
+        severity: 'medium',
+        category: 'GenAI Prompt Injection',
+        owaspCategory: 'LLM01: Prompt Injection',
+        message: 'Template literal with variables - ensure user input is sanitized for LLM prompts',
+        remediation: 'Validate and sanitize user input before including in LLM prompts',
+        cweId: 'CWE-74',
+        languages: ['javascript', 'typescript']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM02: Insecure Output Handling
+    // ===============================
+    {
+        id: 'LLM02-001',
+        pattern: /(?:response|completion|result)\.(?:choices\[0\]\.)?(?:message\.content|text)\s*(?!\.(?:strip|trim|replace|filter|sanitize))/gi,
+        severity: 'high',
+        category: 'GenAI Insecure Output Handling',
+        owaspCategory: 'LLM02: Insecure Output Handling',
+        message: 'LLM output used without validation - potential code injection or XSS',
+        remediation: 'Validate, sanitize, and escape LLM outputs before use in application logic',
+        cweId: 'CWE-20',
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM02-002',
+        pattern: /exec\s*\(\s*(?:response|completion|result|llm_output)/gi,
+        severity: 'critical',
+        category: 'GenAI Code Injection',
+        owaspCategory: 'LLM02: Insecure Output Handling',
+        message: 'Executing LLM output as code is extremely dangerous',
+        remediation: 'Never execute LLM output directly. Parse and validate any code suggestions',
+        cweId: 'CWE-95',
+        languages: ['python', 'javascript', 'typescript']
+    },
+    {
+        id: 'LLM02-003',
+        pattern: /eval\s*\(\s*(?:response|completion|result|llm_output)/gi,
+        severity: 'critical',
+        category: 'GenAI Code Injection',
+        owaspCategory: 'LLM02: Insecure Output Handling',
+        message: 'Evaluating LLM output as code enables arbitrary code execution',
+        remediation: 'Parse and validate LLM outputs instead of direct evaluation',
+        cweId: 'CWE-95',
+        languages: ['javascript', 'typescript', 'python']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM03: Training Data Poisoning
+    // ===============================
+    {
+        id: 'LLM03-001',
+        pattern: /(?:fine_tune|finetune|train_model)\s*\([^)]*(?:user_data|external_data|untrusted_data)/gi,
+        severity: 'high',
+        category: 'GenAI Training Data Security',
+        owaspCategory: 'LLM03: Training Data Poisoning',
+        message: 'Training with external/user data without validation risks model poisoning',
+        remediation: 'Validate, sanitize, and audit training data sources. Implement data provenance tracking',
+        cweId: 'CWE-20',
+        languages: ['python', 'javascript', 'typescript']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM04: Model Denial of Service
+    // ===============================
+    {
+        id: 'LLM04-001',
+        pattern: /(?:max_tokens|max_length)\s*:\s*(?:[1-9]\d{4,}|\d{6,})/gi,
+        severity: 'medium',
+        category: 'GenAI Resource Management',
+        owaspCategory: 'LLM04: Model Denial of Service',
+        message: 'High token limit may cause resource exhaustion and increased costs',
+        remediation: 'Implement reasonable token limits and rate limiting for LLM requests',
+        cweId: 'CWE-400',
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM04-002',
+        pattern: /while\s*\(\s*true\s*\)\s*\{[^}]*(?:openai|anthropic|llm|model)\.(?:chat\.)?(?:complete|generate)/gi,
+        severity: 'high',
+        category: 'GenAI Resource Management',
+        owaspCategory: 'LLM04: Model Denial of Service',
+        message: 'Infinite loop with LLM calls can cause resource exhaustion',
+        remediation: 'Implement proper loop termination conditions and rate limiting',
+        cweId: 'CWE-400',
+        languages: ['javascript', 'typescript', 'python']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM06: Sensitive Information Disclosure
+    // ===============================
+    {
+        id: 'LLM06-001',
+        pattern: /(?:prompt|messages?)\s*[:=]\s*[^'"`]*(?:password|api_key|secret|token|credit_card|ssn|personal)/gi,
+        severity: 'critical',
+        category: 'GenAI Information Disclosure',
+        owaspCategory: 'LLM06: Sensitive Information Disclosure',
+        message: 'Sensitive information detected in LLM prompt - may be exposed in logs or training',
+        remediation: 'Remove sensitive data from prompts, use data anonymization or tokenization',
+        cweId: 'CWE-200',
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM06-002',
+        pattern: /(?:system_prompt|system_message)\s*[:=]\s*[^'"`]*(?:internal|confidential|proprietary|secret)/gi,
+        severity: 'high',
+        category: 'GenAI Information Disclosure',
+        owaspCategory: 'LLM06: Sensitive Information Disclosure',
+        message: 'System prompt contains confidential information that may be extracted',
+        remediation: 'Avoid including sensitive system information in prompts',
+        cweId: 'CWE-200',
+        languages: ['javascript', 'typescript', 'python']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM07: Insecure Plugin Design
+    // ===============================
+    {
+        id: 'LLM07-001',
+        pattern: /tools?\s*[:=]\s*\[[^]]*\{[^}]*(?:function|name)\s*[:=]\s*[^'"`][^}]*\}/gi,
+        severity: 'high',
+        category: 'GenAI Plugin Security',
+        owaspCategory: 'LLM07: Insecure Plugin Design',
+        message: 'LLM tool/plugin with dynamic function name - potential code injection risk',
+        remediation: 'Use allowlisted function names and validate all plugin inputs',
+        cweId: 'CWE-74',
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM07-002',
+        pattern: /function_call\s*[:=]\s*\{[^}]*name\s*[:=]\s*(?:response|llm_output|user_input)/gi,
+        severity: 'critical',
+        category: 'GenAI Plugin Security',
+        owaspCategory: 'LLM07: Insecure Plugin Design',
+        message: 'LLM function call name controlled by untrusted input',
+        remediation: 'Validate function names against allowlist before execution',
+        cweId: 'CWE-74',
+        languages: ['javascript', 'typescript', 'python']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM08: Excessive Agency
+    // ===============================
+    {
+        id: 'LLM08-001',
+        pattern: /(?:agent|autonomous).*?(?:execute|run|perform).*?(?:without|skip).*?(?:approval|confirmation|validation)/gi,
+        severity: 'high',
+        category: 'GenAI Excessive Agency',
+        owaspCategory: 'LLM08: Excessive Agency',
+        message: 'AI agent with excessive autonomy - lacks human oversight',
+        remediation: 'Implement human-in-the-loop controls and approval workflows for critical actions',
+        cweId: 'CWE-862',
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM08-002',
+        pattern: /(?:auto_approve|skip_confirmation|bypass_validation)\s*[:=]\s*true/gi,
+        severity: 'medium',
+        category: 'GenAI Excessive Agency',
+        owaspCategory: 'LLM08: Excessive Agency',
+        message: 'AI system configured to bypass human approval mechanisms',
+        remediation: 'Require human approval for sensitive operations',
+        cweId: 'CWE-862',
+        languages: ['javascript', 'typescript', 'python']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM09: Overreliance
+    // ===============================
+    {
+        id: 'LLM09-001',
+        pattern: /if\s*\(\s*(?:llm_response|ai_output|model_result)\s*\)\s*\{[^}]*(?:critical|important|security|financial)/gi,
+        severity: 'medium',
+        category: 'GenAI Overreliance',
+        owaspCategory: 'LLM09: Overreliance',
+        message: 'Critical decision based solely on LLM output without validation',
+        remediation: 'Implement validation and human oversight for critical decisions',
+        cweId: 'CWE-20',
+        languages: ['javascript', 'typescript', 'python']
+    },
+    {
+        id: 'LLM09-002',
+        pattern: /(?:trust|accept|assume).*?(?:llm|ai|model).*?(?:always|completely|without.*?question)/gi,
+        severity: 'low',
+        category: 'GenAI Overreliance',
+        owaspCategory: 'LLM09: Overreliance',
+        message: 'Code comment suggests overreliance on AI output',
+        remediation: 'Implement proper validation and error handling for AI outputs',
+        cweId: 'CWE-20',
+        languages: ['javascript', 'typescript', 'python']
+    },
+
+    // ===============================
+    // OWASP GenAI Security - LLM10: Model Theft
+    // ===============================
+    {
+        id: 'LLM10-001',
+        pattern: /(?:model\.save|torch\.save|pickle\.dump)\s*\([^)]*(?:public|world_readable|777)/gi,
+        severity: 'critical',
+        category: 'GenAI Model Security',
+        owaspCategory: 'LLM10: Model Theft',
+        message: 'Model saved with overly permissive access permissions',
+        remediation: 'Use restrictive file permissions and secure storage for model files',
+        cweId: 'CWE-732',
+        languages: ['python']
+    },
+    {
+        id: 'LLM10-002',
+        pattern: /(?:api_endpoint|model_url)\s*[:=]\s*['"`]https?:\/\/[^'"`]*['"`].*?(?:public|open|unrestricted)/gi,
+        severity: 'high',
+        category: 'GenAI Model Security',
+        owaspCategory: 'LLM10: Model Theft',
+        message: 'Model endpoint exposed without proper access controls',
+        remediation: 'Implement authentication, authorization, and rate limiting for model endpoints',
+        cweId: 'CWE-306',
+        languages: ['javascript', 'typescript', 'python']
     }
 ] as const;
 
@@ -482,9 +728,9 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
  * Security configuration for different file types
  */
 export const FILE_TYPE_RULES: Record<string, readonly string[]> = {
-    javascript: ['A01-001', 'A02-001', 'A02-002', 'A03-001', 'A03-002', 'A07-001', 'A09-001', 'CISA-001'],
-    typescript: ['A01-001', 'A02-001', 'A02-002', 'A03-001', 'A03-002', 'A07-001', 'A09-001', 'CISA-001'],
-    python: ['A03-001', 'A07-001', 'A09-001', 'CISA-006'],
+    javascript: ['A01-001', 'A02-001', 'A02-002', 'A03-001', 'A03-002', 'A07-001', 'A09-001', 'CISA-001', 'LLM01-001', 'LLM01-003', 'LLM02-001', 'LLM02-002', 'LLM02-003', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002', 'LLM09-001', 'LLM09-002', 'LLM10-002'],
+    typescript: ['A01-001', 'A02-001', 'A02-002', 'A03-001', 'A03-002', 'A07-001', 'A09-001', 'CISA-001', 'LLM01-001', 'LLM01-003', 'LLM02-001', 'LLM02-002', 'LLM02-003', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002', 'LLM09-001', 'LLM09-002', 'LLM10-002'],
+    python: ['A03-001', 'A07-001', 'A09-001', 'CISA-006', 'LLM01-001', 'LLM01-002', 'LLM02-001', 'LLM02-002', 'LLM02-003', 'LLM03-001', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002', 'LLM09-001', 'LLM09-002', 'LLM10-001', 'LLM10-002'],
     java: ['A07-001', 'A09-001', 'A08-001'],
     csharp: ['A07-001', 'A09-001'],
     php: ['A03-001', 'A07-001', 'A09-001'],
