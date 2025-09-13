@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a VS Code extension that scans code for security vulnerabilities based on OWASP Top 10 and CISA Secure by Design principles. The extension provides real-time security analysis across multiple programming languages.
+This is a VS Code extension that scans code for security vulnerabilities based on OWASP Top 10, OWASP LLM Top 10, and CISA Secure by Design principles. The extension provides real-time security analysis across multiple programming languages, including specialized GenAI/LLM security detection.
 
 ## Common Development Commands
 
@@ -37,14 +37,16 @@ This is a VS Code extension that scans code for security vulnerabilities based o
 
 **Security Rules Engine (`src/securityRules.ts`)**
 - `SecurityRule` interface defining rule structure
-- `SECURITY_RULES` array containing 50+ vulnerability detection patterns
-- Organized by OWASP Top 10 categories (A01-A10) and CISA principles
+- `SECURITY_RULES` array containing 70+ vulnerability detection patterns
+- Organized by OWASP Top 10 categories (A01-A10), OWASP LLM Top 10 (LLM01-LLM10), and CISA principles
 - Each rule includes severity, remediation advice, CWE IDs, and references
+- Specialized GenAI/LLM security rules for JavaScript, TypeScript, and Python
 
 ### Extension Architecture
 
 **Activation Events**
 - Activates for 10 programming languages: JavaScript, TypeScript, Python, Java, C#, PHP, Ruby, Go, C/C++
+- Enhanced support for AI/ML codebases with GenAI security rules
 - Provides context menu and command palette integration
 
 **Configuration Options**
@@ -75,24 +77,27 @@ This is a VS Code extension that scans code for security vulnerabilities based o
 
 ### Adding New Security Rules
 1. Add rule to `SECURITY_RULES` array in `src/securityRules.ts`
-2. Include OWASP/CISA category mapping
+2. Include OWASP/CISA/LLM category mapping
 3. Provide clear remediation guidance
 4. Test regex patterns for accuracy and performance
 5. Add CWE ID and reference links where applicable
+6. For GenAI rules, specify target languages (JavaScript, TypeScript, Python)
+7. Update `FILE_TYPE_RULES` mapping to include new rule IDs
 
 ### Security Rule Structure
 ```typescript
 {
-    id: 'A01-001',                    // Unique identifier
-    pattern: /regex_pattern/gi,       // Detection regex
-    severity: 'critical',             // critical|high|medium|low
-    category: 'XSS Prevention',       // Human-readable category
-    owaspCategory: 'A01: ...',        // OWASP Top 10 mapping
-    cisaCategory: 'Input Validation', // CISA principle mapping
-    message: 'Description',           // Issue description
-    remediation: 'Fix guidance',      // How to resolve
-    cweId: 'CWE-79',                 // Common Weakness Enumeration
-    references: ['https://...']       // Additional resources
+    id: 'LLM01-001',                      // Unique identifier (A01-A10, LLM01-LLM10, CISA-XXX)
+    pattern: /regex_pattern/gi,           // Detection regex
+    severity: 'critical',                 // critical|high|medium|low
+    category: 'GenAI Prompt Injection',   // Human-readable category
+    owaspCategory: 'LLM01: Prompt Injection', // OWASP LLM Top 10 mapping
+    cisaCategory: 'Input Validation',     // CISA principle mapping (optional)
+    message: 'Description',               // Issue description
+    remediation: 'Fix guidance',          // How to resolve
+    cweId: 'CWE-74',                     // Common Weakness Enumeration
+    references: ['https://...'],          // Additional resources
+    languages: ['javascript', 'typescript', 'python'] // Target languages
 }
 ```
 
@@ -135,12 +140,20 @@ This is a VS Code extension that scans code for security vulnerabilities based o
 ### Common Development Tasks
 
 **Adding a New Security Rule:**
-1. Research the vulnerability pattern and OWASP/CISA classification
+1. Research the vulnerability pattern and OWASP/CISA/LLM classification
 2. Write and test the regex pattern thoroughly
-3. Add rule to appropriate OWASP category section in `src/securityRules.ts`
-4. Create test files demonstrating both vulnerable and secure code
-5. Verify rule triggers correctly and provides helpful remediation
-6. Run full test suite and security checks
+3. Add rule to appropriate category section in `src/securityRules.ts` (OWASP A01-A10, LLM01-LLM10, or CISA)
+4. Update `FILE_TYPE_RULES` mapping to include the new rule ID for target languages
+5. Create test files demonstrating both vulnerable and secure code
+6. Verify rule triggers correctly and provides helpful remediation
+7. Run full test suite and security checks
+
+**Adding GenAI/LLM Security Rules:**
+1. Focus on LLM-specific vulnerabilities (prompt injection, output handling, etc.)
+2. Target JavaScript/TypeScript (OpenAI, Anthropic APIs) and Python (ML frameworks)
+3. Include patterns for popular LLM libraries and frameworks
+4. Consider both direct API usage and higher-level abstractions
+5. Test with real-world AI/ML code examples
 
 **Modifying Scanner Behavior:**
 1. Update logic in `SecureCodeScanner` class in `src/extension.ts`
@@ -208,4 +221,15 @@ This extension implements several security measures:
 - Protection against regex DoS attacks
 - Workspace boundary enforcement
 
-When modifying the code, maintain these security principles and avoid introducing new attack vectors.
+The extension now includes comprehensive GenAI/LLM security detection covering:
+- Prompt injection vulnerabilities
+- Insecure LLM output handling
+- Training data poisoning risks
+- Model denial of service attacks
+- Sensitive information disclosure
+- Insecure plugin/tool designs
+- Excessive AI agency concerns
+- AI overreliance patterns
+- Model theft and exposure risks
+
+When modifying the code, maintain these security principles and avoid introducing new attack vectors. For GenAI rules, ensure patterns are tested against real AI/ML codebases.

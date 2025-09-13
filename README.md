@@ -1,16 +1,18 @@
 # OWASP/CISA Security Scanner
 
-A comprehensive VS Code extension that scans your code for security vulnerabilities based on the OWASP Top 10 and CISA Secure by Design principles.
+A comprehensive VS Code extension that scans your code for security vulnerabilities based on the OWASP Top 10, OWASP LLM Top 10, and CISA Secure by Design principles.
 
 ![Security Scanner Demo](https://via.placeholder.com/600x300/1f1f1f/ffffff?text=Security+Scanner+Demo)
 
 ## 🛡️ Features
 
-- **Comprehensive Security Analysis**: Detects 50+ types of security vulnerabilities
+- **Comprehensive Security Analysis**: Detects 70+ types of security vulnerabilities
 - **OWASP Top 10 Coverage**: Complete coverage of all OWASP Top 10 categories
+- **OWASP LLM Top 10**: GenAI/LLM security vulnerability detection
 - **CISA Secure by Design**: Implements CISA's secure coding principles
 - **Real-time Scanning**: Auto-scan on file save and open
 - **Multi-language Support**: JavaScript, TypeScript, Python, Java, C#, PHP, Ruby, Go, C/C++
+- **AI/ML Security**: Specialized detection for GenAI and LLM applications
 - **Detailed Remediation**: Specific fix recommendations with CWE classifications
 - **Severity Classification**: Critical, High, Medium, and Low severity ratings
 
@@ -50,6 +52,17 @@ Files are automatically scanned when:
 - **A08: Software/Data Integrity Failures** - Unsafe JSON parsing, prototype pollution
 - **A09: Security Logging Failures** - Sensitive information logging
 - **A10: Server-Side Request Forgery** - Unsafe HTTP requests
+
+### OWASP LLM Top 10
+- **LLM01: Prompt Injection** - User input in prompts, template injection
+- **LLM02: Insecure Output Handling** - Unvalidated LLM output, code execution
+- **LLM03: Training Data Poisoning** - Untrusted training data sources
+- **LLM04: Model Denial of Service** - Resource exhaustion, infinite loops
+- **LLM06: Sensitive Information Disclosure** - Secrets in prompts/outputs
+- **LLM07: Insecure Plugin Design** - Dynamic function calls, unsafe plugins
+- **LLM08: Excessive Agency** - Unchecked AI autonomy, bypass controls
+- **LLM09: Overreliance** - Critical decisions without validation
+- **LLM10: Model Theft** - Insecure model storage and endpoints
 
 ### CISA Secure by Design
 - **Input Validation** - parseInt without radix, path traversal
@@ -110,7 +123,7 @@ npm run security-audit
 // ❌ Critical: Code Injection
 eval(userInput);
 
-// ❌ Critical: Hardcoded Credentials  
+// ❌ Critical: Hardcoded Credentials
 const password = "admin123";
 
 // ❌ High: XSS Vulnerability
@@ -122,12 +135,26 @@ crypto.createHash("md5");
 // ❌ High: Sensitive Logging
 console.log("User password:", userPass);
 
+// ❌ Critical: LLM Prompt Injection
+const prompt = `Hello ${userInput}, help me with: ${userRequest}`;
+
+// ❌ Critical: Executing LLM Output
+eval(llmResponse.choices[0].message.content);
+
+// ❌ Critical: Sensitive Data in Prompts
+const messages = [{ role: "user", content: `My API key is ${apiKey}` }];
+
 // ✅ Secure Alternatives
 JSON.parse(userInput);
 const password = process.env.DB_PASSWORD;
 element.textContent = userData;
 crypto.createHash("sha256");
 console.log("User logged in successfully");
+
+// ✅ Secure LLM Usage
+const prompt = sanitizeInput(`Hello ${userInput}`);
+const validatedOutput = validateLLMResponse(llmResponse);
+const messages = [{ role: "user", content: anonymizeData(userRequest) }];
 ```
 
 ## 🤝 Contributing
@@ -148,6 +175,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/) for vulnerability classifications
+- [OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/) for GenAI security
 - [CISA Secure by Design](https://www.cisa.gov/secure-by-design) for security principles
 - [CWE Database](https://cwe.mitre.org/) for weakness classifications
 
