@@ -3,6 +3,11 @@
     "displayName": "OWASP CISA Security Scanner",
     "description": "Scans code for potential security vulnerabilities based on OWASP Top Ten, OWASP LLM Top 10, and CISA Secure by Design principles",
     "version": "0.1.0",
+    "publisher": "Aegisq",
+    "galleryBanner": {
+        "color": "#1f1f1f",
+        "theme": "dark"
+    },
     "engines": {
         "vscode": "^1.74.0"
     },
@@ -123,6 +128,5 @@
     "bugs": {
         "url": "https://github.com/JeffGrayson1969/owasp-cisa-security-scanner/issues"
     },
-    "license": "MIT",
-    "publisher": "Aegisq"
+    "license": "MIT"
 }
