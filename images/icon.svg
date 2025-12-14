@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background shield shape -->
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer shield (green border) -->
+  <path d="M64 8 L112 24 L112 56 C112 88 88 112 64 120 C40 112 16 88 16 56 L16 24 Z"
+        fill="url(#shieldGradient)" />
+
+  <!-- Inner shield (dark background) -->
+  <path d="M64 16 L104 30 L104 56 C104 84 82 104 64 112 C46 104 24 84 24 56 L24 30 Z"
+        fill="url(#innerGradient)" />
+
+  <!-- Magnifying glass (scanner symbol) -->
+  <circle cx="58" cy="52" r="20" fill="none" stroke="#4CAF50" stroke-width="4" />
+  <line x1="72" y1="66" x2="88" y2="82" stroke="#4CAF50" stroke-width="5" stroke-linecap="round" />
+
+  <!-- Checkmark inside magnifying glass -->
+  <polyline points="48,52 55,60 70,44" fill="none" stroke="#4CAF50" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Small lock icon at bottom -->
+  <rect x="56" y="88" width="16" height="12" rx="2" fill="#4CAF50" />
+  <path d="M58 88 L58 82 C58 78 62 74 66 74 C70 74 74 78 74 82 L74 88"
+        fill="none" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" />
+</svg>

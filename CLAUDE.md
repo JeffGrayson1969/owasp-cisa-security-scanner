@@ -37,10 +37,12 @@ This is a VS Code extension that scans code for security vulnerabilities based o
 
 **Security Rules Engine (`src/securityRules.ts`)**
 - `SecurityRule` interface defining rule structure
-- `SECURITY_RULES` array containing 70+ vulnerability detection patterns
+- `SECURITY_RULES` array containing 60+ vulnerability detection patterns
 - Organized by OWASP Top 10 categories (A01-A10), OWASP LLM Top 10 (LLM01-LLM10), and CISA principles
 - Each rule includes severity, remediation advice, CWE IDs, and references
 - Specialized GenAI/LLM security rules for JavaScript, TypeScript, and Python
+- SQL injection detection (A03-SQL-001 through A03-SQL-004) for template literals, string concatenation, and Python f-strings
+- `FILE_TYPE_RULES` mapping controls which rules apply to each language
 
 ### Extension Architecture
 
@@ -53,6 +55,12 @@ This is a VS Code extension that scans code for security vulnerabilities based o
 - `owaspCisaScanner.enableAutoScan`: Auto-scan on file save (default: true)
 - `owaspCisaScanner.maxFileSize`: Maximum file size to scan in bytes (default: 5MB)
 - `owaspCisaScanner.enableHighSeverityOnly`: Filter to show only high-severity issues (default: false)
+- `owaspCisaScanner.excludePatterns`: Additional glob patterns to exclude from scanning (default: [])
+
+**Caching and Performance**
+- SHA-256 content hashing for reliable cache invalidation
+- Automatic cache clearing when configuration changes
+- Open documents automatically rescan when settings are modified
 
 **Security Features**
 - File extension allowlist prevents scanning of unsupported files
@@ -177,10 +185,10 @@ This is a VS Code extension that scans code for security vulnerabilities based o
 
 ### Publishing Workflow
 1. Run `npm run security-check` to ensure code quality
-2. Update version in `package.json`
-3. Run `npm run vscode:prepublish` to create production build
+2. Update version in `package.json` and `CHANGELOG.md`
+3. Run `npx vsce package` to create the VSIX file
 4. Test extension package thoroughly
-5. Publish to VS Code Marketplace
+5. Publish with `npx vsce publish` or upload VSIX manually to VS Code Marketplace
 
 ## Testing and Debugging
 
@@ -204,12 +212,25 @@ src/
     └── extension.test.ts
 
 dist/                  # Compiled output
-├── extension.js       # Bundled extension
+└── extension.js       # Bundled extension
+
+images/                # Extension assets
+├── icon.png           # Extension icon (128x128)
+├── icon.svg           # Icon source file
+└── demo-problems-panel.png  # README screenshot
+
+examples/              # Demo files (excluded from scanning)
+└── vulnerable-demo.js # Sample vulnerable code for testing
+
+scripts/               # Utility scripts
+├── generate-icon.js   # Regenerate PNG icon from SVG
+└── generate-placeholder-screenshot.js
 
 package.json          # Extension manifest and dependencies
 tsconfig.json         # TypeScript configuration
 webpack.config.js     # Build configuration
-eslint.config.mjs     # Linting rules
+eslint.config.mjs     # Linting rules (flat config format)
+CONTRIBUTING.md       # Contribution guidelines
 ```
 
 ## Security Considerations

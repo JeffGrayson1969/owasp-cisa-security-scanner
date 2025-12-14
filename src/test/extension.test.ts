@@ -5,7 +5,7 @@ suite('Extension Integration Test Suite', () => {
     vscode.window.showInformationMessage('Starting OWASP/CISA Scanner integration tests.');
 
     test('Extension loads and activates', async () => {
-        const extension = vscode.extensions.getExtension('JeffGrayson1969.owasp-cisa-security-scanner');
+        const extension = vscode.extensions.getExtension('Aegisq.owasp-cisa-security-scanner');
         
         if (extension) {
             if (!extension.isActive) {

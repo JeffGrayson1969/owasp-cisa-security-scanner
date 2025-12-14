@@ -168,16 +168,54 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
         remediation: 'Use DOM manipulation methods like createElement() and appendChild()',
         cweId: 'CWE-79'
     },
+    // SQL Injection Detection
     {
-        id: 'A03-006',
-        pattern: /\$\{\s*[^}]*\s*\}/g,
-        severity: 'medium',
-        category: 'Template Injection',
+        id: 'A03-SQL-001',
+        pattern: /(?:query|execute|exec|raw)\s*\(\s*`[^`]*\$\{[^}]*\}[^`]*`/gi,
+        severity: 'critical',
+        category: 'SQL Injection',
         owaspCategory: 'A03: Injection',
-        message: 'Template literal with potential user input - ensure proper escaping',
-        remediation: 'Validate and sanitize all user input in template literals',
-        cweId: 'CWE-94'
+        message: 'SQL query with template literal interpolation - potential SQL injection',
+        remediation: 'Use parameterized queries or prepared statements instead of string interpolation',
+        cweId: 'CWE-89',
+        references: ['https://owasp.org/www-community/attacks/SQL_Injection'],
+        languages: ['javascript', 'typescript']
     },
+    {
+        id: 'A03-SQL-002',
+        pattern: /(?:query|execute|exec|raw)\s*\(\s*['"`].*?\+.*?['"`]\s*\)/gi,
+        severity: 'critical',
+        category: 'SQL Injection',
+        owaspCategory: 'A03: Injection',
+        message: 'SQL query with string concatenation - potential SQL injection',
+        remediation: 'Use parameterized queries or prepared statements instead of string concatenation',
+        cweId: 'CWE-89',
+        languages: ['javascript', 'typescript', 'python', 'java', 'php']
+    },
+    {
+        id: 'A03-SQL-003',
+        pattern: /(?:cursor\.execute|connection\.execute)\s*\(\s*f['"`]/gi,
+        severity: 'critical',
+        category: 'SQL Injection',
+        owaspCategory: 'A03: Injection',
+        message: 'SQL query with Python f-string - potential SQL injection',
+        remediation: 'Use parameterized queries: cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))',
+        cweId: 'CWE-89',
+        languages: ['python']
+    },
+    {
+        id: 'A03-SQL-004',
+        pattern: /\.format\s*\([^)]*\).*?(?:SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER)/gi,
+        severity: 'high',
+        category: 'SQL Injection',
+        owaspCategory: 'A03: Injection',
+        message: 'SQL query using .format() - potential SQL injection',
+        remediation: 'Use parameterized queries instead of string formatting',
+        cweId: 'CWE-89',
+        languages: ['python']
+    },
+    // Note: Generic template literal rule (A03-006) removed as it flagged every ${} usage.
+    // Template injection is better caught by context-specific rules like LLM01-003.
 
     // ===============================
     // OWASP A04: Insecure Design
@@ -210,26 +248,8 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
     // ===============================
     // OWASP A06: Vulnerable Components
     // ===============================
-    {
-        id: 'A06-001',
-        pattern: /require\s*\(\s*['"`][^'"`]*['"`]\s*\)/gi,
-        severity: 'low',
-        category: 'Dependency Management',
-        owaspCategory: 'A06: Vulnerable Components',
-        message: 'Static require() detected - ensure dependencies are regularly updated',
-        remediation: 'Regularly audit dependencies with npm audit and keep them updated',
-        cweId: 'CWE-1104'
-    },
-    {
-        id: 'A06-002',
-        pattern: /import\s+.*\s+from\s+['"`][^'"`]*['"`]/gi,
-        severity: 'low',
-        category: 'Dependency Management',
-        owaspCategory: 'A06: Vulnerable Components',
-        message: 'External dependency import - verify package integrity',
-        remediation: 'Use package-lock.json, verify checksums, and audit dependencies regularly',
-        cweId: 'CWE-1104'
-    },
+    // Note: Generic require/import rules removed as they cause too many false positives.
+    // Dependency auditing should be done via npm audit, not per-import scanning.
 
     // ===============================
     // OWASP A07: Identity and Authentication Failures
@@ -505,11 +525,11 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
     },
     {
         id: 'LLM01-003',
-        pattern: /`[^`]*\$\{[^}]*\}[^`]*`/gi,
+        pattern: /(?:prompt|message|content|instruction|query)\s*[:=]\s*`[^`]*\$\{[^}]*\}[^`]*`/gi,
         severity: 'medium',
         category: 'GenAI Prompt Injection',
         owaspCategory: 'LLM01: Prompt Injection',
-        message: 'Template literal with variables - ensure user input is sanitized for LLM prompts',
+        message: 'Template literal in prompt/message context - ensure user input is sanitized for LLM prompts',
         remediation: 'Validate and sanitize user input before including in LLM prompts',
         cweId: 'CWE-74',
         languages: ['javascript', 'typescript']
@@ -726,16 +746,117 @@ export const SECURITY_RULES: readonly SecurityRule[] = [
 
 /**
  * Security configuration for different file types
+ * Maps language IDs to applicable security rule IDs
  */
 export const FILE_TYPE_RULES: Record<string, readonly string[]> = {
-    javascript: ['A01-001', 'A02-001', 'A02-002', 'A03-001', 'A03-002', 'A07-001', 'A09-001', 'CISA-001', 'LLM01-001', 'LLM01-003', 'LLM02-001', 'LLM02-002', 'LLM02-003', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002', 'LLM09-001', 'LLM09-002', 'LLM10-002'],
-    typescript: ['A01-001', 'A02-001', 'A02-002', 'A03-001', 'A03-002', 'A07-001', 'A09-001', 'CISA-001', 'LLM01-001', 'LLM01-003', 'LLM02-001', 'LLM02-002', 'LLM02-003', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002', 'LLM09-001', 'LLM09-002', 'LLM10-002'],
-    python: ['A03-001', 'A07-001', 'A09-001', 'CISA-006', 'LLM01-001', 'LLM01-002', 'LLM02-001', 'LLM02-002', 'LLM02-003', 'LLM03-001', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002', 'LLM09-001', 'LLM09-002', 'LLM10-001', 'LLM10-002'],
-    java: ['A07-001', 'A09-001', 'A08-001'],
-    csharp: ['A07-001', 'A09-001'],
-    php: ['A03-001', 'A07-001', 'A09-001'],
-    ruby: ['A03-001', 'A07-001', 'A09-001'],
-    go: ['A07-001', 'A09-001'],
-    cpp: ['CISA-002', 'CISA-003'],
-    c: ['CISA-002', 'CISA-003']
+    javascript: [
+        // OWASP A01: Broken Access Control
+        'A01-001', 'A01-002',
+        // OWASP A02: Cryptographic Failures
+        'A02-001', 'A02-002', 'A02-003', 'A02-004',
+        // OWASP A03: Injection (including SQL injection)
+        'A03-001', 'A03-002', 'A03-003', 'A03-004', 'A03-005',
+        'A03-SQL-001', 'A03-SQL-002',
+        // OWASP A04: Insecure Design
+        'A04-001',
+        // OWASP A05: Security Misconfiguration
+        'A05-001',
+        // OWASP A07: Authentication Failures
+        'A07-001', 'A07-002', 'A07-003', 'A07-004',
+        // OWASP A08: Data Integrity
+        'A08-001', 'A08-002',
+        // OWASP A09: Logging Failures
+        'A09-001', 'A09-002',
+        // OWASP A10: SSRF
+        'A10-001',
+        // CISA Secure by Design
+        'CISA-001', 'CISA-002', 'CISA-003', 'CISA-004', 'CISA-005', 'CISA-006',
+        // Additional Security
+        'SEC-001', 'SEC-002', 'SEC-003', 'SEC-004', 'SEC-005', 'SEC-006', 'SEC-007', 'SEC-008',
+        // LLM Security
+        'LLM01-001', 'LLM01-003', 'LLM02-001', 'LLM02-002', 'LLM02-003',
+        'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM06-002',
+        'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002',
+        'LLM09-001', 'LLM09-002', 'LLM10-002'
+    ],
+    typescript: [
+        // OWASP A01: Broken Access Control
+        'A01-001', 'A01-002',
+        // OWASP A02: Cryptographic Failures
+        'A02-001', 'A02-002', 'A02-003', 'A02-004',
+        // OWASP A03: Injection (including SQL injection)
+        'A03-001', 'A03-002', 'A03-003', 'A03-004', 'A03-005',
+        'A03-SQL-001', 'A03-SQL-002',
+        // OWASP A04: Insecure Design
+        'A04-001',
+        // OWASP A05: Security Misconfiguration
+        'A05-001',
+        // OWASP A07: Authentication Failures
+        'A07-001', 'A07-002', 'A07-003', 'A07-004',
+        // OWASP A08: Data Integrity
+        'A08-001', 'A08-002',
+        // OWASP A09: Logging Failures
+        'A09-001', 'A09-002',
+        // OWASP A10: SSRF
+        'A10-001',
+        // CISA Secure by Design
+        'CISA-001', 'CISA-002', 'CISA-003', 'CISA-004', 'CISA-005', 'CISA-006',
+        // Additional Security
+        'SEC-001', 'SEC-002', 'SEC-003', 'SEC-004', 'SEC-005', 'SEC-006', 'SEC-007', 'SEC-008',
+        // LLM Security
+        'LLM01-001', 'LLM01-003', 'LLM02-001', 'LLM02-002', 'LLM02-003',
+        'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM06-002',
+        'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002',
+        'LLM09-001', 'LLM09-002', 'LLM10-002'
+    ],
+    javascriptreact: [
+        'A01-001', 'A01-002', 'A02-004', 'A03-001', 'A03-002',
+        'A07-001', 'A07-002', 'A07-003', 'A08-001', 'A09-001',
+        'SEC-002', 'SEC-003', 'SEC-004', 'SEC-005', 'SEC-008'
+    ],
+    typescriptreact: [
+        'A01-001', 'A01-002', 'A02-004', 'A03-001', 'A03-002',
+        'A07-001', 'A07-002', 'A07-003', 'A08-001', 'A09-001',
+        'SEC-002', 'SEC-003', 'SEC-004', 'SEC-005', 'SEC-008'
+    ],
+    python: [
+        // OWASP A03: Injection (including SQL injection)
+        'A03-001-PY', 'A03-002-PY', 'A03-SQL-002', 'A03-SQL-003', 'A03-SQL-004',
+        // OWASP A07: Authentication Failures
+        'A07-001', 'A07-002', 'A07-003',
+        // OWASP A08: Data Integrity
+        'A08-001',
+        // OWASP A09: Logging Failures
+        'A09-001', 'A09-002',
+        // CISA
+        'CISA-006',
+        // LLM Security
+        'LLM01-001', 'LLM01-002', 'LLM02-001', 'LLM02-002', 'LLM02-003',
+        'LLM03-001', 'LLM04-001', 'LLM04-002', 'LLM06-001', 'LLM06-002',
+        'LLM07-001', 'LLM07-002', 'LLM08-001', 'LLM08-002',
+        'LLM09-001', 'LLM09-002', 'LLM10-001', 'LLM10-002'
+    ],
+    java: [
+        'A07-001', 'A07-002', 'A07-003', 'A08-001', 'A09-001', 'A09-002',
+        'A03-SQL-002'
+    ],
+    csharp: [
+        'A07-001', 'A07-002', 'A07-003', 'A09-001', 'A09-002'
+    ],
+    php: [
+        'A03-001', 'A07-001', 'A07-002', 'A07-003', 'A09-001', 'A09-002',
+        'A03-SQL-002'
+    ],
+    ruby: [
+        'A03-001', 'A07-001', 'A07-002', 'A07-003', 'A09-001', 'A09-002'
+    ],
+    go: [
+        'A07-001', 'A07-002', 'A07-003', 'A09-001', 'A09-002'
+    ],
+    cpp: [
+        'CISA-002', 'CISA-003', 'A07-001', 'A07-002', 'A07-003'
+    ],
+    c: [
+        'CISA-002', 'CISA-003', 'A07-001', 'A07-002', 'A07-003'
+    ]
 } as const;

@@ -1,12 +1,19 @@
 # OWASP/CISA Security Scanner
 
+[![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/AegisQ.owasp-cisa-security-scanner?style=flat-square&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=AegisQ.owasp-cisa-security-scanner)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/AegisQ.owasp-cisa-security-scanner?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=AegisQ.owasp-cisa-security-scanner)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/AegisQ.owasp-cisa-security-scanner?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=AegisQ.owasp-cisa-security-scanner)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
 A comprehensive VS Code extension that scans your code for security vulnerabilities based on the OWASP Top 10, OWASP LLM Top 10, and CISA Secure by Design principles.
 
-![Security Scanner Demo](https://via.placeholder.com/600x300/1f1f1f/ffffff?text=Security+Scanner+Demo)
+![Security Scanner Demo](images/demo-problems-panel.png)
+
+*Security issues detected in the Problems panel with severity ratings and remediation advice*
 
 ## 🛡️ Features
 
-- **Comprehensive Security Analysis**: Detects 70+ types of security vulnerabilities
+- **Comprehensive Security Analysis**: Detects 60+ types of security vulnerabilities
 - **OWASP Top 10 Coverage**: Complete coverage of all OWASP Top 10 categories
 - **OWASP LLM Top 10**: GenAI/LLM security vulnerability detection
 - **CISA Secure by Design**: Implements CISA's secure coding principles
@@ -181,7 +188,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [VS Code Marketplace](https://marketplace.visualstudio.com/)
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AegisQ.owasp-cisa-security-scanner)
+- [GitHub Repository](https://github.com/JeffGrayson1969/owasp-cisa-security-scanner)
 - [GitHub Issues](https://github.com/JeffGrayson1969/owasp-cisa-security-scanner/issues)
 - [OWASP Foundation](https://owasp.org/)
 - [CISA](https://www.cisa.gov/)

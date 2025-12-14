@@ -1,13 +1,6 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as crypto from 'crypto';
 import { SECURITY_RULES } from './securityRules';
-
-// Security: Use allowlist of supported file extensions to prevent path traversal
-const SUPPORTED_EXTENSIONS = new Set(['.js', '.ts', '.jsx', '.tsx', '.py', '.java', '.cs', '.php', '.rb', '.go', '.cpp', '.c', '.h', '.hpp']);
-
-// Security: Maximum file size to prevent DoS attacks (5MB)
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 // Default exclude patterns for common third-party directories
 const DEFAULT_EXCLUDE_PATTERNS = [
@@ -21,7 +14,8 @@ const DEFAULT_EXCLUDE_PATTERNS = [
     '**/venv/**',
     '**/__pycache__/**',
     '**/bin/**',
-    '**/obj/**'
+    '**/obj/**',
+    '**/examples/**'
 ];
 
 interface SecurityVulnerability {
@@ -47,56 +41,20 @@ class SecureCodeScanner {
         this.diagnosticCollection = vscode.languages.createDiagnosticCollection('owaspCisaScanner');
         this.config = vscode.workspace.getConfiguration('owaspCisaScanner');
         
-        // Listen for configuration changes
-        vscode.workspace.onDidChangeConfiguration(e => {
+        // Listen for configuration changes and rescan open documents
+        vscode.workspace.onDidChangeConfiguration(async (e) => {
             if (e.affectsConfiguration('owaspCisaScanner')) {
                 this.config = vscode.workspace.getConfiguration('owaspCisaScanner');
                 // Clear caches when configuration changes
                 this.scanCache.clear();
                 this.ruleCache.clear();
+
+                // Rescan all open documents with new settings
+                for (const editor of vscode.window.visibleTextEditors) {
+                    await this.scanDocument(editor.document);
+                }
             }
         });
-    }
-
-    /**
-     * Security: Validates file path and size before processing
-     */
-    private async validateFile(filePath: string): Promise<boolean> {
-        try {
-            // Security: Check file extension allowlist
-            const ext = path.extname(filePath).toLowerCase();
-            if (!SUPPORTED_EXTENSIONS.has(ext)) {
-                return false;
-            }
-
-            // Security: Check file size to prevent DoS
-            const stats = await fs.promises.stat(filePath);
-            const maxFileSize = this.config.get<number>('maxFileSize', MAX_FILE_SIZE);
-            if (stats.size > maxFileSize) {
-                vscode.window.showWarningMessage(`File ${filePath} is too large to scan (${stats.size} bytes, max ${maxFileSize})`);
-                return false;
-            }
-
-            // Security: Ensure file is within workspace
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders) {
-                return false;
-            }
-
-            const isInWorkspace = workspaceFolders.some(folder => 
-                filePath.startsWith(path.resolve(folder.uri.fsPath))
-            );
-
-            if (!isInWorkspace) {
-                vscode.window.showErrorMessage('File is outside workspace - security scan blocked');
-                return false;
-            }
-
-            return true;
-        } catch (error) {
-            console.error('File validation error:', error);
-            return false;
-        }
     }
 
     /**
@@ -124,17 +82,31 @@ class SecureCodeScanner {
     }
 
     /**
-     * Simple glob pattern matching
+     * Simple glob pattern matching with proper escaping
      */
     private matchesPattern(filePath: string, pattern: string): boolean {
-        // Convert glob pattern to regex
-        const regexPattern = pattern
-            .replace(/\*\*/g, '.*')
-            .replace(/\*/g, '[^/]*')
-            .replace(/\?/g, '[^/]');
-        
-        const regex = new RegExp('^' + regexPattern + '$');
-        return regex.test(filePath);
+        // Security: Escape regex special characters before converting glob to regex
+        // This prevents regex injection from user-provided exclude patterns
+        const escapeRegex = (str: string): string => {
+            return str.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+        };
+
+        // First escape special regex chars (except * and ? which are glob wildcards)
+        let regexPattern = pattern
+            .split('**').map(part =>
+                part.split('*').map(subpart =>
+                    subpart.split('?').map(escapeRegex).join('[^/]')
+                ).join('[^/]*')
+            ).join('.*');
+
+        try {
+            const regex = new RegExp('^' + regexPattern + '$');
+            return regex.test(filePath);
+        } catch {
+            // If pattern is invalid, don't match (fail safe)
+            console.error('Invalid exclude pattern:', pattern);
+            return false;
+        }
     }
 
     public async scanDocument(document: vscode.TextDocument): Promise<void> {
@@ -313,16 +285,10 @@ class SecureCodeScanner {
     }
 
     /**
-     * Simple hash function for content caching
+     * Cryptographic hash function for reliable content caching
      */
     private hashContent(content: string): string {
-        let hash = 0;
-        for (let i = 0; i < content.length; i++) {
-            const char = content.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return hash.toString();
+        return crypto.createHash('sha256').update(content).digest('hex').substring(0, 16);
     }
 
     /**
