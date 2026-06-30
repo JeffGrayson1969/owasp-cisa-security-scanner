@@ -1,0 +1,10 @@
+# CodeShield ignore patterns (gitignore-style).
+# Files listed here are excluded from aegisq scans.
+
+# Test fixtures intentionally contain vulnerable string literals
+# (eval(...), Math.random(), crypto.createHash("md5"), etc.) used to
+# assert the matching rules fire. These are bait, not real vulns.
+src/test/**
+
+# Demo file shipped to illustrate detections — same reasoning.
+examples/**

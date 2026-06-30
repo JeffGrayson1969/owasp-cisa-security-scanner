@@ -2,7 +2,7 @@
     "name": "owasp-cisa-security-scanner",
     "displayName": "OWASP CISA Security Scanner",
     "description": "Scans code for potential security vulnerabilities based on OWASP Top Ten, OWASP LLM Top 10, and CISA Secure by Design principles",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "Aegisq",
     "icon": "images/icon.png",
     "galleryBanner": {
@@ -105,7 +105,8 @@
         "lint:check": "eslint src",
         "test": "node ./out/test/runTest.js",
         "security-audit": "npm audit --audit-level moderate",
-        "security-check": "npm run security-audit && npm run lint:check"
+        "security-check": "npm run security-audit && npm run lint:check",
+        "smoke-scan": "node ./scripts/smoke-scan.js"
     },
     "devDependencies": {
         "@types/mocha": "^10.0.10",
@@ -132,5 +133,8 @@
     },
     "homepage": "https://github.com/JeffGrayson1969/owasp-cisa-security-scanner#readme",
     "license": "MIT",
-    "qna": "https://github.com/JeffGrayson1969/owasp-cisa-security-scanner/issues"
+    "qna": "https://github.com/JeffGrayson1969/owasp-cisa-security-scanner/issues",
+    "dependencies": {
+        "@aegisq-codeshield/security-rules": "^2.1.0"
+    }
 }

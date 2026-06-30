@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.ts'
+      - '**/*.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'webpack.config.js'
+      - 'tsconfig.json'
+      - '.github/workflows/ci.yml'
+
+jobs:
+  build-and-smoke-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run lint:check
+
+      - run: npm run compile
+
+      - name: Smoke scan against vulnerable-demo.js
+        run: npm run smoke-scan
+
+      - name: Package extension (.vsix)
+        run: npx --yes @vscode/vsce package --no-dependencies --out scanner.vsix
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scanner-vsix
+          path: scanner.vsix
+          retention-days: 14

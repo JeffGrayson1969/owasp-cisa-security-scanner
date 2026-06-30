@@ -2,6 +2,18 @@
 
 All notable changes to the "owasp-cisa-security-scanner" extension will be documented in this file.
 
+## [0.3.0] - 2026-06-29
+
+### Changed
+- **Shared rules package**: Security rules now come from [`@aegisq-codeshield/security-rules`](https://www.npmjs.com/package/@aegisq-codeshield/security-rules) (pinned to `^2.1.0`) instead of being maintained in-tree, so detections stay in sync with AegisQ-CodeShield. No change to rule behavior — the same OWASP Top 10, OWASP LLM Top 10, and CISA categories are still detected, with refreshed patterns.
+
+### Removed
+- `src/securityRules.ts` (and the unused `FILE_TYPE_RULES` mapping) — replaced by the npm package.
+
+### Added
+- CI workflow (`.github/workflows/ci.yml`) that lint-checks, builds, runs a rules smoke scan, and packages the `.vsix` on every push and PR — catches breaking changes from rules-package updates before publish.
+- README "Looking for more?" section linking to [AegisQ-CodeShield](https://aegisq-codeshield.com).
+
 ## [0.2.0] - 2025-12-13
 
 ### Added

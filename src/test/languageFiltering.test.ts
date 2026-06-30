@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { SECURITY_RULES } from '../securityRules';
+import { ALL_RULES as SECURITY_RULES } from '@aegisq-codeshield/security-rules';
 
 suite('Language-Specific Rule Filtering', () => {
     

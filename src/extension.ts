@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
-import { SECURITY_RULES } from './securityRules';
+import { ALL_RULES as SECURITY_RULES } from '@aegisq-codeshield/security-rules';
 
 // Default exclude patterns for common third-party directories
 const DEFAULT_EXCLUDE_PATTERNS = [
