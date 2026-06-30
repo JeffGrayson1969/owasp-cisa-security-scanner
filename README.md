@@ -194,6 +194,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [OWASP Foundation](https://owasp.org/)
 - [CISA](https://www.cisa.gov/)
 
+## Looking for more?
+
+This extension runs a regex-based ruleset entirely client-side, and it's **free forever**. If you need deeper analysis or team workflows, **AegisQ-CodeShield** is the paid upgrade. It adds:
+
+- **LLM-powered scanning** — context-aware vulnerability detection beyond static patterns
+- **Auto-fix with diff preview** — review suggested remediations before applying
+- **OWASP / CISA / CWE compliance reports** — exportable for audits
+- **MCP server** — use the same scanner from Claude Code, Cursor, and Windsurf
+- **License management** — centralized for teams and organizations
+
+### Plans
+
+Both paid plans include **every** feature above — the difference is how many people are covered:
+
+- **Pro** — for an **individual developer**. Full CodeShield for a single user.
+  - **$19/month** — [Subscribe monthly](https://buy.stripe.com/6oUbJ1cnHaT3bskgfB4Rq00)
+  - **$190/year** ([2 months free](https://buy.stripe.com/4gM3cv0EZgdn0NG0gD4Rq01)) — best value
+- **Team** — for a **whole team or organization**. Everything in Pro, plus **multiple seats** and centralized license management.
+  - **$49/month** — [Subscribe monthly](https://buy.stripe.com/9B6fZhbjD6CN9kc7J54Rq02)
+  - **$490/year** ([2 months free](https://buy.stripe.com/4gMaEXevPaT30NGgfB4Rq03)) — best value
+
+The free Marketplace extension stays standalone and shares its ruleset with CodeShield via the [`@aegisq-codeshield/security-rules`](https://www.npmjs.com/package/@aegisq-codeshield/security-rules) package, so detections stay in sync.
+
 ---
 
 **Stay Secure!** 🛡️
